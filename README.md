@@ -50,3 +50,5 @@ Usage: cfndsl [options] FILE
 ```
 
 Would you like to know more? [cfndsl](https://github.com/cfndsl/cfndsl)
+
+They lie.. you can actually build cloudformation in yaml format...
