@@ -15,7 +15,7 @@ docker run -ti --rm -v `pwd`/templates/:/home/gocd/templates cfndsl /home/gocd/t
 ## run it and get pretty json
 
 ```
-docker run -ti --rm -v `pwd`/templates/:/home/gocd/templates cfndsl /home/gocd/templates/test.rb
+docker run -ti --rm -v `pwd`/templates/:/home/gocd/templates cfndsl -p /home/gocd/templates/test.rb
 ```
 
 ## run it and get yaml
