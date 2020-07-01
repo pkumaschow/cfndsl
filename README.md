@@ -48,3 +48,5 @@ Usage: cfndsl [options] FILE
     -h, --help                       Display this screen
 
 ```
+
+Would you like to know more? [cfndsl](https://github.com/cfndsl/cfndsl)
