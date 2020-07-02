@@ -9,19 +9,19 @@ docker build -t cfndsl .
 ## run it and get json
 
 ```
-docker run -ti --rm -v `pwd`/templates/:/home/gocd/templates cfndsl /home/gocd/templates/test.rb
+docker run -ti --rm -v `pwd`/templates/:/home/gocd/templates cfndsl test.rb
 ```
 
 ## run it and get pretty json
 
 ```
-docker run -ti --rm -v `pwd`/templates/:/home/gocd/templates cfndsl -p /home/gocd/templates/test.rb
+docker run -ti --rm -v `pwd`/templates/:/home/gocd/templates cfndsl -p test.rb
 ```
 
 ## run it and get yaml
 
 ```
-docker run -ti --rm -v `pwd`/templates/:/home/gocd/templates cfndsl -f yaml /home/gocd/templates/test.rb
+docker run -ti --rm -v `pwd`/templates/:/home/gocd/templates cfndsl -f yaml test.rb
 ```
 
 ## get help

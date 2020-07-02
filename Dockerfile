@@ -19,6 +19,8 @@ RUN gem install cfndsl -v $CFNDSL_VERSION && \
 
 RUN cfndsl -u $AWS_SPEC_VERSION
 
+WORKDIR /home/gocd/templates
+
 ENTRYPOINT ["/usr/local/bundle/bin/cfndsl"]
 
 CMD ["--help"]
