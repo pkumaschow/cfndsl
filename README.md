@@ -6,6 +6,12 @@
 docker build -t cfndsl .
 ```
 
+or:
+
+```
+make
+```
+
 ## run it and get json
 
 ```
@@ -22,6 +28,12 @@ docker run -ti --rm -v `pwd`/templates/:/home/gocd/templates cfndsl -p test.rb
 
 ```
 docker run -ti --rm -v `pwd`/templates/:/home/gocd/templates cfndsl -f yaml test.rb
+```
+
+or if you built it as suggested above:
+
+```
+make test
 ```
 
 ## get help
