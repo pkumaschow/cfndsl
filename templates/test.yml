@@ -1,0 +1,8 @@
+CloudFormation do
+  Metadata(foo: 'bar')
+
+  EC2_Instance(:myInstance) do
+    ImageId 'ami-12345678'
+    InstanceType 't1.micro'
+  end
+end

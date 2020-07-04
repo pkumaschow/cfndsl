@@ -36,6 +36,12 @@ or if you built it as suggested above:
 make test
 ```
 
+or you specify a template:
+
+```
+make template=test.rb yaml
+```
+
 ## get help
 
 ```
