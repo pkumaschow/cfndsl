@@ -4,4 +4,6 @@ test:
 	docker run -ti --rm -v `pwd`/templates/:/home/gocd/templates cfndsl -f yaml test.rb
 yaml:
 	docker run -ti --rm -v `pwd`/templates/:/home/gocd/templates cfndsl -f yaml $(template)
+json:
+	docker run -ti --rm -v `pwd`/templates/:/home/gocd/templates cfndsl -p -f json $(template)
 
