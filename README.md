@@ -1,6 +1,6 @@
 # cfndsl docker image
 
-![Docker](https://github.com/pkumaschow/cfndsl/workflows/Docker/badge.svg)
+![Publish Docker](https://github.com/pkumaschow/cfndsl/workflows/Publish%20Docker/badge.svg)
 
 
 ## build it
