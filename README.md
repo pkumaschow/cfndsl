@@ -42,13 +42,13 @@ make test
 or you specify a template:
 
 ```
-template=test.yaml make template=test.rb yaml
+template=test.rb make yaml
 ```
 
 validate the outputted template
 
 ```
-template=test.yaml make template=test.rb yaml > out.yml
+template=test.yaml make yaml > out.yml
 template=out.yml make validate
 ```
 
