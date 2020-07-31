@@ -1,8 +1,32 @@
 CloudFormation do
+  Description 'my template description'
   Metadata(foo: 'bar')
 
+  # Simple Parameter
+  Parameter 'foo'
+
+  Parameter(:bar) do 
+    Description 'This is the bar parameter'
+    Type 'String'
+    Default 'bar'
+    AllowedValues %w(foo bar)
+    ConstraintDescription 'only foo bar allowed'
+  end
+
+  Parameter(:ec2ami) do
+    Description 'ami id for the ec2 image'
+  end
+  
+  # create my ec2 instance
   EC2_Instance(:myInstance) do
-    ImageId 'ami-12345678'
+    ImageId Ref('ec2ami')
     InstanceType 't1.micro'
+  end
+
+  # output a value and export it
+  Output(:myoutput) do
+    Value 'my value'
+    Description 'my description'
+    Export 'name-of-my-exported-value'
   end
 end
