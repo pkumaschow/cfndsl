@@ -1,3 +1,4 @@
+CFNDSL_VERSION := 1.2.0
 build:
 	docker build -t cfndsl .
 test:
