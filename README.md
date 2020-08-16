@@ -52,6 +52,22 @@ template=test.yaml make yaml > out.yml
 template=out.yml make validate
 ```
 
+## Make the command simpler
+
+Create an alias in your .bashrc file
+
+```
+alias cfndsl='docker run -ti --rm -v `pwd`/:/home/gocd/templates pkumaschow/cfndsl'
+```
+
+Then if you have a template in your current directory you could simply execute.
+
+```
+cfndsl test.rb
+cfndsl -p test.rb
+cfndsl -f yaml test.rb
+```
+
 ## get help
 
 ```
