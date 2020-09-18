@@ -1,6 +1,5 @@
-CFNDSL_VERSION := 1.2.0
 build:
-	docker build -t cfndsl .
+	./ci.sh
 test:
 	docker run -ti --rm -v `pwd`/templates/:/home/gocd/templates cfndsl -f yaml test.rb
 yaml:
@@ -9,3 +8,5 @@ json:
 	@docker run -ti --rm -v `pwd`/templates/:/home/gocd/templates cfndsl -p -f json $(template)
 validate:
 	aws cloudformation validate-template --template-body file://./$(template)
+
+.PHONY: build test yaml validate
