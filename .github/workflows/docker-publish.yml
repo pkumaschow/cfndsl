@@ -7,7 +7,7 @@ jobs:
     - uses: actions/checkout@master
     - name: Publish to Registry
       env:
-        CFNDSL_VERSION: 1.2.0
+        CFNDSL_VERSION: 1.3.0
       uses: elgohr/Publish-Docker-Github-Action@8e555d3d730d42d274a0435e12f3ef9971ea07c9
       with:
         name: pkumaschow/cfndsl
