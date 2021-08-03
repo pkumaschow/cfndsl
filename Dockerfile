@@ -8,6 +8,7 @@ RUN apk update
 RUN apk -Uuv add bash groff less python py-pip && \
                 pip install awscli && \
                 apk add --update zip git && \
+                apk add --update apk-tools && \
                 apk --purge -v del py-pip && \
                 rm /var/cache/apk/* && \
                 adduser -D -u 1000 gocd
