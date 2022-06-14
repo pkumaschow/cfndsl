@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-export CFNDSL_VERSION=1.3.3
+export CFNDSL_VERSION=1.3.6
 
 echo "Building cfndsl version $CFNDSL_VERSION"
 
