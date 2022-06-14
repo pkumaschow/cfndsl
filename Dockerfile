@@ -1,11 +1,11 @@
-FROM ruby:alpine3.11
+FROM ruby:alpine3.16
 
-ARG CFNDSL_VERSION="1.3.3"
+ARG CFNDSL_VERSION="1.3.6"
 ARG AWS_SPEC_VERSION='7.1.0'
 
 RUN apk update
 
-RUN apk -Uuv add bash groff less python py-pip && \
+RUN apk -Uuv add bash groff less python3 py-pip && \
                 pip install awscli && \
                 apk add --update zip git && \
                 apk add --upgrade apk-tools && \
