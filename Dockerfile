@@ -1,7 +1,7 @@
-FROM ruby:alpine3.16
+FROM ruby:3-alpine3.17
 
-ARG CFNDSL_VERSION="1.3.6"
-ARG AWS_SPEC_VERSION='7.1.0'
+ARG CFNDSL_VERSION="1.4.0"
+ARG AWS_SPEC_VERSION="7.1.0"
 
 RUN apk update
 
