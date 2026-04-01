@@ -2,9 +2,9 @@ name: Publish Docker
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
 
 env:
   CFNDSL_VERSION: "1.7.3"
