@@ -3,6 +3,12 @@
 ![Publish Docker](https://github.com/pkumaschow/cfndsl/workflows/Publish%20Docker/badge.svg)
 
 
+## pull it
+
+```
+docker pull pkumaschow/cfndsl
+```
+
 ## build it
 
 ```
