@@ -17,6 +17,7 @@
 - **CVE-2025-26519** (HIGH) — musl libc: buffer overflow; fixed by `apk upgrade` → `musl`
 - **CVE-2024-49761** (HIGH) — rexml: XDoS via crafted XML; fixed by `gem update rexml`
 - **CVE-2025-61594** (HIGH) — uri gem: vulnerability in URI parsing; fixed by `gem update uri`
+- **CVE-2026-24049** (HIGH) — wheel/setuptools: Path traversal in `wheel.cli.unpack` — chmod uses unsanitized archive filename; fixed by `pip3 install --upgrade wheel setuptools`
 
 ### CI/CD
 - Replaced `elgohr/Publish-Docker-Github-Action` with `docker/build-push-action@v6`

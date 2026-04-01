@@ -11,6 +11,7 @@ RUN gem update rexml uri --no-document
 
 RUN apk add --no-cache bash groff less python3 py3-pip git zip && \
     pip3 install --no-cache-dir --break-system-packages awscli && \
+    pip3 install --no-cache-dir --break-system-packages --upgrade wheel setuptools && \
     adduser -D -u 1000 gocd
 
 # Install gems and download spec as root (/usr/local/bundle is root-owned in ruby:3-alpine)
