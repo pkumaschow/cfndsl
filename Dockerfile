@@ -1,24 +1,26 @@
-FROM ruby:3-alpine3.17
+FROM ruby:3-alpine
 
-ARG CFNDSL_VERSION="1.4.0"
+ARG CFNDSL_VERSION="1.7.3"
 ARG AWS_SPEC_VERSION="7.1.0"
 
-RUN apk update
+# Upgrade OS packages (fixes libcrypto3/libssl3 CRITICAL, musl HIGH CVEs)
+RUN apk upgrade --no-cache
 
-RUN apk -Uuv add bash groff less python3 py-pip && \
-                pip install awscli && \
-                apk add --update zip git && \
-                apk add --upgrade apk-tools && \
-                apk --purge -v del py-pip && \
-                rm /var/cache/apk/* && \
-                adduser -D -u 1000 gocd
+# Patch bundled Ruby gem CVEs (rexml CVE-2024-49761, uri CVE-2025-61594)
+RUN gem update rexml uri --no-document
 
-USER gocd
+RUN apk add --no-cache bash groff less python3 py3-pip git zip && \
+    pip3 install --no-cache-dir --break-system-packages awscli && \
+    adduser -D -u 1000 gocd
 
-RUN gem install cfndsl -v $CFNDSL_VERSION && \
-                                gem install aws-sdk
+# Install gems and download spec as root (/usr/local/bundle is root-owned in ruby:3-alpine)
+RUN gem install cfndsl -v $CFNDSL_VERSION --no-document && \
+    gem install aws-sdk --no-document
 
 RUN cfndsl -u $AWS_SPEC_VERSION
+
+# Switch to non-root user for runtime only
+USER gocd
 
 WORKDIR /home/gocd/templates
 
