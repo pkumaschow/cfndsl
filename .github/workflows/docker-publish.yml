@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [master]
 
-env:
-  CFNDSL_VERSION: "1.7.3"
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,6 +16,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Extract cfndsl version from Dockerfile
+        id: cfndsl_version
+        run: |
+          echo "version=$(grep -oP 'CFNDSL_VERSION="\K[^"]+' Dockerfile)" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -37,7 +39,7 @@ jobs:
           context: .
           load: true
           tags: pkumaschow/cfndsl:latest
-          build-args: CFNDSL_VERSION=${{ env.CFNDSL_VERSION }}
+          build-args: CFNDSL_VERSION=${{ steps.cfndsl_version.outputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -48,8 +50,8 @@ jobs:
         with:
           context: .
           push: true
-          tags: pkumaschow/cfndsl:latest,pkumaschow/cfndsl:${{ env.CFNDSL_VERSION }}
-          build-args: CFNDSL_VERSION=${{ env.CFNDSL_VERSION }}
+          tags: pkumaschow/cfndsl:latest,pkumaschow/cfndsl:${{ steps.cfndsl_version.outputs.version }}
+          build-args: CFNDSL_VERSION=${{ steps.cfndsl_version.outputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           provenance: mode=max
