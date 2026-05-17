@@ -13,9 +13,21 @@ RUN apk upgrade --no-cache
 # Patch bundled Ruby gem CVEs:
 #   rexml      CVE-2024-49761
 #   uri        CVE-2025-61594
-#   erb        CVE-2026-41316
-#   net-imap   CVE-2026-42246
-RUN gem update rexml uri erb net-imap --no-document
+#   erb        CVE-2026-41316   (4.0.4.1 has a native extension — needs build-base + ruby-dev)
+#   net-imap   CVE-2026-42246, CVE-2026-42256
+#
+# `gem update` installs the new versions under /usr/local/bundle/, but Ruby's
+# bundled default/system gemspecs in /usr/local/lib/ruby/gems/.../specifications/
+# (and /specifications/default/) are left behind — SCA scanners (Docker Scout,
+# trivy) still flag those old gemspec files. Remove the stale ones so reports
+# are clean. Ruby itself prefers the higher installed version at require time.
+RUN apk add --no-cache --virtual .gem-build-deps build-base ruby-dev && \
+    gem update rexml uri net-imap --no-document && \
+    gem install erb -v ">= 4.0.4.1, < 5.0" --no-document && \
+    RUBY_GEM_DIR=$(ruby -e 'puts Gem.default_dir') && \
+    rm -f "$RUBY_GEM_DIR"/specifications/default/erb-*.gemspec && \
+    rm -f "$RUBY_GEM_DIR"/specifications/net-imap-*.gemspec && \
+    apk del .gem-build-deps
 
 # urllib3>=2.7.0 pinned to fix CVE-2026-44431, CVE-2026-44432 (pulled in as awscli dep)
 RUN apk add --no-cache bash groff less python3 py3-pip git zip && \
