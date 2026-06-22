@@ -1,5 +1,17 @@
 # Changelog
 
+## [2026-06-22] - security rebuild (`pkumaschow/cfndsl:latest`, `gitlab.homelab.com:5050/peterk/cfndsl:latest`)
+
+### Security
+- Security refresh — the published image was ~2 months stale and Docker Scout flagged fixable
+  HIGH/MEDIUM CVEs. A fresh rebuild clears them; verified with local trivy: **0 fixable
+  HIGH/MEDIUM remaining**.
+- No Dockerfile change required — the existing `apk upgrade`, `gem update rexml uri net-imap`, erb
+  pin (≥4.0.4.1), stale-gemspec removal, and `urllib3>=2.7.0` already remediate the newly-surfaced
+  CVEs on rebuild. Cleared: libcrypto3/libssl3, libexpat, musl, nghttp2-libs, libcurl, xz-libs
+  (OS); **erb** (CVE-2026-41316); **net-imap** (CVE-2026-42245, CVE-2026-42246, CVE-2026-47240);
+  **urllib3** (CVE-2026-44431, CVE-2026-44432). This entry exists to trigger the CI rebuild + push.
+
 ## [Unreleased]
 
 ### Changed
