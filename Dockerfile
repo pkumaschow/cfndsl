@@ -1,7 +1,7 @@
 FROM ruby:3-alpine
 
-ARG CFNDSL_VERSION="1.7.3"
-ARG AWS_SPEC_VERSION="7.1.0"
+ARG CFNDSL_VERSION="1.9.5"
+ARG AWS_SPEC_VERSION="260.0.0"
 
 # Cache-bust the apk-upgrade layer so each CI build pulls the latest
 # Alpine security patches (CI passes APK_REFRESH=${{ github.run_id }}).
@@ -39,7 +39,15 @@ RUN apk add --no-cache bash groff less python3 py3-pip git zip && \
 RUN gem install cfndsl -v $CFNDSL_VERSION --no-document && \
     gem install aws-sdk --no-document
 
-RUN cfndsl -u $AWS_SPEC_VERSION
+# Download the CloudFormation resource specification into the RUNTIME user's home.
+# cfndsl resolves $HOME/.cfndsl/resource_specification.json and silently falls back to the
+# spec bundled inside the gem when that path is missing (lib/cfndsl/globals.rb). Running this
+# as root writes /root/.cfndsl, which the gocd runtime user never reads — so the pinned version
+# had no effect and the image used whatever spec the gem shipped. Write it to /home/gocd and
+# chown it, then assert the version so a silent fallback can't return.
+RUN HOME=/home/gocd cfndsl -u $AWS_SPEC_VERSION && \
+    chown -R gocd:gocd /home/gocd/.cfndsl && \
+    test "$(ruby -rjson -e 'puts JSON.parse(File.read("/home/gocd/.cfndsl/resource_specification.json"))["ResourceSpecificationVersion"]')" = "$AWS_SPEC_VERSION"
 
 # Switch to non-root user for runtime only
 USER gocd
