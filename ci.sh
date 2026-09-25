@@ -6,7 +6,7 @@ if [ "${1}" = "podman" ]; then
   RUNTIME=podman
 fi
 
-export CFNDSL_VERSION=1.7.3
+export CFNDSL_VERSION=1.9.5
 
 echo "Building cfndsl version $CFNDSL_VERSION"
 
