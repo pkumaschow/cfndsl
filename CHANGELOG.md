@@ -1,5 +1,45 @@
 # Changelog
 
+## [2026-09-25] - spec bump
+
+### Changed
+- `AWS_SPEC_VERSION` 260.0.0 -> **265.0.0**. `cfndsl` 1.9.5 is still the latest gem.
+
+### Security
+- **resolv** CVE-2026-80212 (HIGH): default gem 0.6.2 updated to 0.8.0.
+- **The erb patch never reached runtime.** erb and resolv are default gems, so a plain
+  `require` loaded the stdlib copy (erb 4.0.4, resolv 0.6.2) even with the patched gem installed;
+  deleting the stale gemspec only hid them from scanners. `RUBYLIB` now points at the patched
+  libs, and the build asserts the loaded versions. rexml, uri and net-imap were already loading
+  their patched versions.
+
+The 2026-08-11 entry below was never merged or published, so this is the first release since
+2026-06-22 and carries its spec-resolution fix.
+
+## [2026-08-11] - version bump + spec-resolution fix
+
+### Fixed
+- **The CloudFormation resource specification download never reached the runtime user.**
+  `cfndsl` resolves `$HOME/.cfndsl/resource_specification.json` and silently falls back to the
+  spec bundled inside the gem when that file is absent (`lib/cfndsl/globals.rb`). The Dockerfile
+  ran `cfndsl -u` as **root**, writing `/root/.cfndsl`, then switched to `USER gocd`
+  (`HOME=/home/gocd`) — so the pinned version had no effect and the image used the gem's bundled
+  spec. Verified against the published `pkumaschow/cfndsl:latest`: it resolves the bundled
+  `cfndsl-1.7.3/lib/cfndsl/aws/resource_specification.json` at **237.0.0**, with `/root/.cfndsl`
+  present but unreadable to `gocd` — ~16MB of downloaded spec carried and never used.
+  Now written to `/home/gocd/.cfndsl`, chowned to `gocd`, and the version is asserted in the same
+  layer so a silent fallback cannot return.
+
+### Changed
+- `cfndsl` gem 1.7.3 -> **1.9.5** (`Dockerfile` and `ci.sh`, which both hardcode it)
+- `AWS_SPEC_VERSION` 7.1.0 -> **260.0.0**. The old value was the example from cfndsl's README
+  (`cfndsl -u 7.1.0 --region ap-southeast-2`) rather than a deliberate pin; it predates most of
+  the current AWS resource surface. Latest spec at time of change carries 1,662 resource types.
+
+### Verified
+- Image built locally; as the `gocd` runtime user `CfnDsl.specification_file` resolves
+  `/home/gocd/.cfndsl/resource_specification.json` at **260.0.0**, with `cfndsl 1.9.5`.
+
 ## [2026-06-22] - security rebuild (`pkumaschow/cfndsl:latest`, `gitlab.homelab.com:5050/peterk/cfndsl:latest`)
 
 ### Security
