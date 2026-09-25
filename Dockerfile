@@ -1,7 +1,7 @@
 FROM ruby:3-alpine
 
 ARG CFNDSL_VERSION="1.9.5"
-ARG AWS_SPEC_VERSION="260.0.0"
+ARG AWS_SPEC_VERSION="265.0.0"
 
 # Cache-bust the apk-upgrade layer so each CI build pulls the latest
 # Alpine security patches (CI passes APK_REFRESH=${{ github.run_id }}).
@@ -15,19 +15,32 @@ RUN apk upgrade --no-cache
 #   uri        CVE-2025-61594
 #   erb        CVE-2026-41316   (4.0.4.1 has a native extension — needs build-base + ruby-dev)
 #   net-imap   CVE-2026-42246, CVE-2026-42256
+#   resolv     CVE-2026-80212
 #
 # `gem update` installs the new versions under /usr/local/bundle/, but Ruby's
 # bundled default/system gemspecs in /usr/local/lib/ruby/gems/.../specifications/
 # (and /specifications/default/) are left behind — SCA scanners (Docker Scout,
 # trivy) still flag those old gemspec files. Remove the stale ones so reports
-# are clean. Ruby itself prefers the higher installed version at require time.
+# are clean.
+#
+# erb and resolv ship as default gems, and a plain `require` loads the stdlib
+# copy even when a newer gem is installed — so the update alone never reaches
+# runtime. RUBYLIB puts the patched libs ahead of stdlib (via stable symlinks,
+# so the ENV survives version bumps); the final check fails the build otherwise.
+ENV RUBYLIB=/opt/gem-overrides/erb:/opt/gem-overrides/resolv
 RUN apk add --no-cache --virtual .gem-build-deps build-base ruby-dev && \
-    gem update rexml uri net-imap --no-document && \
+    gem update rexml uri net-imap resolv --no-document && \
     gem install erb -v ">= 4.0.4.1, < 5.0" --no-document && \
+    mkdir -p /opt/gem-overrides && \
+    for g in erb resolv; do \
+      ln -s "$(ruby -e "puts Gem::Specification.select { |s| s.name == '$g' }.max_by(&:version).full_gem_path")/lib" /opt/gem-overrides/$g; \
+    done && \
     RUBY_GEM_DIR=$(ruby -e 'puts Gem.default_dir') && \
     rm -f "$RUBY_GEM_DIR"/specifications/default/erb-*.gemspec && \
+    rm -f "$RUBY_GEM_DIR"/specifications/default/resolv-*.gemspec && \
     rm -f "$RUBY_GEM_DIR"/specifications/net-imap-*.gemspec && \
-    apk del .gem-build-deps
+    apk del .gem-build-deps && \
+    ruby -rerb -rresolv -e 'abort "stale erb/resolv at runtime" if Gem::Version.new(ERB.version) < Gem::Version.new("4.0.4.1") || Gem::Version.new(Resolv::VERSION) < Gem::Version.new("0.8.0")'
 
 # urllib3>=2.7.0 pinned to fix CVE-2026-44431, CVE-2026-44432 (pulled in as awscli dep)
 RUN apk add --no-cache bash groff less python3 py3-pip git zip && \

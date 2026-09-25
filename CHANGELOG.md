@@ -1,5 +1,21 @@
 # Changelog
 
+## [2026-09-25] - spec bump
+
+### Changed
+- `AWS_SPEC_VERSION` 260.0.0 -> **265.0.0**. `cfndsl` 1.9.5 is still the latest gem.
+
+### Security
+- **resolv** CVE-2026-80212 (HIGH): default gem 0.6.2 updated to 0.8.0.
+- **The erb patch never reached runtime.** erb and resolv are default gems, so a plain
+  `require` loaded the stdlib copy (erb 4.0.4, resolv 0.6.2) even with the patched gem installed;
+  deleting the stale gemspec only hid them from scanners. `RUBYLIB` now points at the patched
+  libs, and the build asserts the loaded versions. rexml, uri and net-imap were already loading
+  their patched versions.
+
+The 2026-08-11 entry below was never merged or published, so this is the first release since
+2026-06-22 and carries its spec-resolution fix.
+
 ## [2026-08-11] - version bump + spec-resolution fix
 
 ### Fixed
