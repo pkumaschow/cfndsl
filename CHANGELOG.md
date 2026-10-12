@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026-10-12] - spec bump
+
+### Changed
+- `AWS_SPEC_VERSION` 265.0.0 -> **267.0.0**. `cfndsl` 1.9.5 is still the latest gem.
+
 ## [2026-09-25] - spec bump
 
 ### Changed
