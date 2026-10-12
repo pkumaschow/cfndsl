@@ -1,7 +1,7 @@
 FROM ruby:3-alpine
 
 ARG CFNDSL_VERSION="1.9.5"
-ARG AWS_SPEC_VERSION="265.0.0"
+ARG AWS_SPEC_VERSION="267.0.0"
 
 # Cache-bust the apk-upgrade layer so each CI build pulls the latest
 # Alpine security patches (CI passes APK_REFRESH=${{ github.run_id }}).
