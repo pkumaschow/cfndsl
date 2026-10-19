@@ -5,6 +5,14 @@ stages:
 variables:
   REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE"
 
+# Pin every job to the x86_64 Fedora docker runner. Untagged jobs were otherwise picked up by
+# the instance-wide cryptotrader-runner (run_untagged=true), whose k3s pods land on arm64
+# workers: the amd64 docker-scout binary then fails with "syntax error", and Docker Hub pulls
+# from those nodes have flaked.
+default:
+  tags:
+    - fedora-desktop
+
 build-image:
   stage: build
   image:
