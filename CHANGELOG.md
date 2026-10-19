@@ -9,6 +9,11 @@
 - Released as `v1.9.5+spec.269.0.0`. Spec-only bumps keep the gem version and add the spec as
   build metadata.
 
+### Fixed
+- All GitLab CI jobs pinned to the `fedora-desktop` (x86_64) runner. Untagged jobs were picked up
+  by the arm64 `cryptotrader-runner`, which failed `scout-cves` (amd64 binary) and pushed an arm64
+  image to the GitLab registry (pipeline 916).
+
 ## [2026-10-19] - spec bump
 
 ### Changed
