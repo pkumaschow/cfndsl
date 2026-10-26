@@ -4,6 +4,10 @@
 
 ### Changed
 - `AWS_SPEC_VERSION` 268.0.0 -> **269.0.0**. `cfndsl` 1.9.5 is still the latest gem.
+- GitHub and GitLab `master` reconciled. GitHub had PR merges #6 and #7 that GitLab only had as
+  content; a no-content merge now records them, so both remotes fast-forward to the same commit.
+- Released as `v1.9.5+spec.269.0.0`. Spec-only bumps keep the gem version and add the spec as
+  build metadata.
 
 ## [2026-10-19] - spec bump
 
