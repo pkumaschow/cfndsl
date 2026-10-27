@@ -16,6 +16,7 @@ RUN apk upgrade --no-cache
 #   erb        CVE-2026-41316   (4.0.4.1 has a native extension — needs build-base + ruby-dev)
 #   net-imap   CVE-2026-42246, CVE-2026-42256
 #   resolv     CVE-2026-80212
+#   json       CVE-2026-54696   (fixed 2.19.9; held on 2.x, native extension)
 #
 # `gem update` installs the new versions under /usr/local/bundle/, but Ruby's
 # bundled default/system gemspecs in /usr/local/lib/ruby/gems/.../specifications/
@@ -23,29 +24,35 @@ RUN apk upgrade --no-cache
 # trivy) still flag those old gemspec files. Remove the stale ones so reports
 # are clean.
 #
-# erb and resolv ship as default gems, and a plain `require` loads the stdlib
+# erb, resolv and json ship as default gems, and a plain `require` loads the stdlib
 # copy even when a newer gem is installed — so the update alone never reaches
 # runtime. RUBYLIB puts the patched libs ahead of stdlib (via stable symlinks,
 # so the ENV survives version bumps); the final check fails the build otherwise.
-ENV RUBYLIB=/opt/gem-overrides/erb:/opt/gem-overrides/resolv
+ENV RUBYLIB=/opt/gem-overrides/erb:/opt/gem-overrides/resolv:/opt/gem-overrides/json
 RUN apk add --no-cache --virtual .gem-build-deps build-base ruby-dev && \
     gem update rexml uri net-imap resolv --no-document && \
     gem install erb -v ">= 4.0.4.1, < 5.0" --no-document && \
+    gem install json -v ">= 2.19.9, < 3.0" --no-document && \
     mkdir -p /opt/gem-overrides && \
-    for g in erb resolv; do \
+    for g in erb resolv json; do \
       ln -s "$(ruby -e "puts Gem::Specification.select { |s| s.name == '$g' }.max_by(&:version).full_gem_path")/lib" /opt/gem-overrides/$g; \
     done && \
     RUBY_GEM_DIR=$(ruby -e 'puts Gem.default_dir') && \
     rm -f "$RUBY_GEM_DIR"/specifications/default/erb-*.gemspec && \
     rm -f "$RUBY_GEM_DIR"/specifications/default/resolv-*.gemspec && \
+    rm -f "$RUBY_GEM_DIR"/specifications/default/json-*.gemspec && \
     rm -f "$RUBY_GEM_DIR"/specifications/net-imap-*.gemspec && \
     apk del .gem-build-deps && \
-    ruby -rerb -rresolv -e 'abort "stale erb/resolv at runtime" if Gem::Version.new(ERB.version) < Gem::Version.new("4.0.4.1") || Gem::Version.new(Resolv::VERSION) < Gem::Version.new("0.8.0")'
+    ruby -rerb -rresolv -rjson -e 'abort "stale erb/resolv/json at runtime" if Gem::Version.new(ERB.version) < Gem::Version.new("4.0.4.1") || Gem::Version.new(Resolv::VERSION) < Gem::Version.new("0.8.0") || Gem::Version.new(JSON::VERSION) < Gem::Version.new("2.19.9")'
 
 # urllib3>=2.7.0 pinned to fix CVE-2026-44431, CVE-2026-44432 (pulled in as awscli dep)
+# py3-pip is removed once awscli is in: nothing needs pip at runtime, and it carries
+# CVE-2026-13346 (pip < 26.2.0) plus vendored msgpack/setuptools/urllib3 that 26.2's SBOM exposes.
 RUN apk add --no-cache bash groff less python3 py3-pip git zip && \
     pip3 install --no-cache-dir --break-system-packages awscli 'urllib3>=2.7.0' && \
     pip3 install --no-cache-dir --break-system-packages --upgrade wheel setuptools && \
+    apk del --no-cache py3-pip && \
+    ! python3 -m pip --version 2>/dev/null && \
     adduser -D -u 1000 gocd
 
 # Install gems and download spec as root (/usr/local/bundle is root-owned in ruby:3-alpine)
