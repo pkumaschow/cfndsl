@@ -1,5 +1,16 @@
 # Changelog
 
+## [2026-10-27] - security
+
+### Security
+- `json` default gem 2.9.1 -> **2.21.2** (CVE-2026-54696, generator heap overflow; fixed 2.19.9,
+  held on 2.x). Loaded via the existing `RUBYLIB` override, and the build asserts the runtime version.
+- `py3-pip` removed after installing awscli. Nothing needs pip at runtime; this drops
+  CVE-2026-13346 (pip < 26.2.0). Upgrading pip instead was rejected: pip 26.2 ships an SBOM that
+  exposes its vendored msgpack/setuptools/urllib3 to Trivy as 4 HIGH findings.
+- Not fixed: CVE-2026-115557 (python3 `ssl`, fixed in 3.14.10-r0, Alpine edge only). Waiting for
+  the v3.24 backport, peterk/work#50.
+
 ## [2026-10-26] - spec bump
 
 ### Changed
