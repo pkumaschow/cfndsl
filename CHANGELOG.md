@@ -1,5 +1,12 @@
 # Changelog
 
+## [2026-11-10] - security rebuild
+
+### Security
+- Rebuild only, no Dockerfile change. Alpine v3.24 now ships `zlib` 1.4-r0 (CVE-2026-4738,
+  CRITICAL, was 1.3.2-r1) and `libexpat` 2.10.0-r0; `apk upgrade` picks both up.
+- `musl` stays 1.2.6-r3 (CVE-2026-107891): no newer build in v3.24 yet.
+
 ## [2026-10-28] - ci
 
 ### CI/CD
