@@ -45,6 +45,13 @@ RUN apk add --no-cache --virtual .gem-build-deps build-base ruby-dev && \
     apk del .gem-build-deps && \
     ruby -rerb -rresolv -rjson -e 'abort "stale erb/resolv/json at runtime" if Gem::Version.new(ERB.version) < Gem::Version.new("4.0.4.1") || Gem::Version.new(Resolv::VERSION) < Gem::Version.new("0.8.0") || Gem::Version.new(JSON::VERSION) < Gem::Version.new("2.19.9")'
 
+# musl CVE-2026-107891 (HIGH) is fixed in 1.2.6-r6, which only edge has; v3.24 is stuck on r3.
+# Take musl + musl-utils (no deps) from edge alone, and assert the version so it can't no-op.
+# Must come AFTER the gem build above: build-base pulls musl-dev 1.2.6-r3, which pins musl back to r3.
+# Drop this once v3.24 ships >= 1.2.6-r6.
+RUN apk upgrade --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main musl musl-utils && \
+    test "$(apk version -t "$(apk info -e -v musl | sed 's/^musl-//')" 1.2.6-r6)" != "<"
+
 # urllib3>=2.7.0 pinned to fix CVE-2026-44431, CVE-2026-44432 (pulled in as awscli dep)
 # py3-pip is removed once awscli is in: nothing needs pip at runtime, and it carries
 # CVE-2026-13346 (pip < 26.2.0) plus vendored msgpack/setuptools/urllib3 that 26.2's SBOM exposes.
